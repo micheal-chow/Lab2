@@ -4,7 +4,7 @@ BYTES_TO_READ = 4096
 
 def get(host, port):
 
-    request = b"GET / HTTP/1.1\nwww.google.com\n\n"
+    request = b"GET / HTTP/1.1\nHost: www.google.com\n\n"
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((host, port))

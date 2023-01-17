@@ -1,4 +1,5 @@
 import socket
+from threading import Thread
 
 BYTES_TO_READ = 4096
 PROXY_SERVER_HOST = "127.0.0.1"
@@ -58,6 +59,22 @@ def start_server():
 
         handle_connection(conn, addr)
         
+
+def start_threaded_server():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
+        server_socket.bind((PROXY_SERVER_HOST, PROXY_SERVER_PORT))
+        server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        server_socket.listen(2)
+        # this '2' parameter specifies how much of a queue to allow
+        # if conn is being created to server and someone tries to make another at same time,
+        # we keep second conn in queue then process in order, default one
+        # beyond queue gets connection refused error
+
+        while True:
+            conn, addr = server_socket.accept()
+            thread = Thread(target=handle_connection, args=(conn,addr))
+
     
 
-start_server()
+# start_server()
+start_threaded_server()
